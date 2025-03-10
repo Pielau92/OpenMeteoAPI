@@ -15,3 +15,5 @@ dist/
 
 # Logs
 *.log
+.idea/misc.xml
+OpenMeteoAPI/.cache.sqlite
