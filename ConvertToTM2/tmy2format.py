@@ -62,6 +62,7 @@ DATA_ELEMENTS_POS = {
     # global horizontal illuminance [100 lux]
     'global_hor_ill': {
         'value': (36, 39),
+        'factor': 100,
         'source_flag': 40,
         'uncertainty_flag': 41,
     },
@@ -69,6 +70,7 @@ DATA_ELEMENTS_POS = {
     # direct normal illuminance [100 lux]
     'dir_norm_illuminance': {
         'value': (42, 45),
+        'factor': 100,
         'source_flag': 46,
         'uncertainty_flag': 47,
     },
@@ -76,6 +78,7 @@ DATA_ELEMENTS_POS = {
     # diffuse horizontal illuminance [100 lux]
     'diff_hor_illuminance': {
         'value': (48, 51),
+        'factor': 100,
         'source_flag': 52,
         'uncertainty_flag': 53,
     },
@@ -83,6 +86,7 @@ DATA_ELEMENTS_POS = {
     # zenith luminance [10 Cd/m²]
     'zenith_illuminance': {
         'value': (54, 57),
+        'factor': 10,
         'source_flag': 58,
         'uncertainty_flag': 59,
     },
@@ -90,6 +94,7 @@ DATA_ELEMENTS_POS = {
     # total sky cover [10 %]
     'total_sky_cover': {
         'value': (60, 61),
+'factor': 10,
         'source_flag': 62,
         'uncertainty_flag': 63,
     },
@@ -97,6 +102,7 @@ DATA_ELEMENTS_POS = {
     # opaque sky cover [10 %]
     'opaque_sky_cover': {
         'value': (64, 65),
+'factor': 10,
         'source_flag': 66,
         'uncertainty_flag': 67,
     },
@@ -104,6 +110,7 @@ DATA_ELEMENTS_POS = {
     # dry bulb temperature [0.1 °C]
     'dry_bulb_temp': {
         'value': (68, 71),
+'factor': 0.1,
         'source_flag': 72,
         'uncertainty_flag': 73,
     },
@@ -111,6 +118,7 @@ DATA_ELEMENTS_POS = {
     # dew point temperature [0.1 °C]
     'dew_point_temp': {
         'value': (74, 77),
+'factor': 0.1,
         'source_flag': 78,
         'uncertainty_flag': 79,
     },
@@ -139,6 +147,7 @@ DATA_ELEMENTS_POS = {
     # wind speed [0.1 m/s]
     'wind_speed': {
         'value': (96, 98),
+'factor': 0.1,
         'source_flag': 99,
         'uncertainty_flag': 100,
     },
@@ -146,6 +155,7 @@ DATA_ELEMENTS_POS = {
     # visibility [0.1 km]
     'visibility': {
         'value': (101, 104),
+'factor': 0.1,
         'source_flag': 105,
         'uncertainty_flag': 106,
     },
