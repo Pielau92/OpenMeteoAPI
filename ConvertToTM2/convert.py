@@ -7,13 +7,13 @@ class TMY2:
         self.header = Line(HEADER_ELEMENTS_POS, line_len=59)
         self.lines = [Line(DATA_ELEMENTS_POS, line_len=142) for _ in range(self.length)]
 
-    def write(self, data):
-
-        for line_index in range(self.length):
+    def write(self, data, start=0):
+        data_len = len(data['hour'])
+        for line_index in range(data_len):
             values = {}
             for key in data:
                 values.update({key: data[key][line_index]})
-            self.lines[line_index].set_values(values)
+            self.lines[start + line_index].set_values(values)
 
     def print(self):
         for line in self.lines:
