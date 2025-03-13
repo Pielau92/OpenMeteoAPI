@@ -1,4 +1,9 @@
-# region HEADER ELEMENTS IN THE TMY2 FORMAT
+# TMY2 format information issued from "The User's Manual for TMY2s" (https://www.nrel.gov/docs/legosti/old/7668.pdf)
+
+# region HEADER ELEMENTS
+# position of each element inside the header
+#   single value = single position
+#   tuple (e.g. (1, 2)) = position from...to (e.g. from 1 to 2 included))
 
 HEADER_ELEMENTS_POS = {
     'wban': (2, 6),
@@ -23,7 +28,10 @@ HEADER_ELEMENTS_POS = {
 
 # endregion
 
-# region DATA ELEMENTS IN THE TMY2 FORMAT
+# region DATA ELEMENTS
+# position of each element inside a record
+#   single value = single position
+#   tuple (e.g. (1, 2)) = position from...to (e.g. from 1 to 2 included))
 
 DATA_ELEMENTS_POS = {
     # local standard time
