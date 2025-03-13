@@ -1,4 +1,4 @@
-from tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
+from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
 
 
 class TMY2:

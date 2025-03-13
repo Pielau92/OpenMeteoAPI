@@ -6,6 +6,7 @@ import requests_cache
 import pandas as pd
 
 from retry_requests import retry
+from ConvertToTM2.convert import TMY2
 
 URL = "https://api.open-meteo.com/v1/forecast"  # API url
 
