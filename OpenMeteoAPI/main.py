@@ -70,4 +70,17 @@ hourly_data = get_hourly_values(response, variables)
 hourly_dataframe = pd.DataFrame(hourly_data)
 print(hourly_dataframe)
 
+tmy2_data = {
+    'year': hourly_dataframe.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
+    'month': hourly_dataframe.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
+    'day': hourly_dataframe.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
+    'hour': hourly_dataframe.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+    'dry_bulb_temp': hourly_dataframe['temperature_2m'].to_list(),
+    'rel_hum': hourly_dataframe['relative_humidity_2m'].to_list()
+}
+
+tm2 = TMY2(length=200)
+tm2.write(tmy2_data, 10)
+tm2.print()
+
 pass
