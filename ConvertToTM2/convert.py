@@ -35,6 +35,18 @@ class TMY2:
         for record in self.records:
             print("".join(record.data))
 
+    def export(self, path:str)-> None:
+        """Export all records to designated path.
+
+        :param str path: output path, to receive a tm2 file, the file extension should be .tm2
+        """
+
+        with open(path, 'w') as f:
+            f.write("".join(self.header.data))  # write header
+            for record in self.records:
+                f.write("".join(record.data))  # write record
+                f.write('\n')  # new line
+
 
 class Record:
     def __init__(self, file_format: dict, line_len: int) -> None:

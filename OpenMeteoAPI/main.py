@@ -82,5 +82,6 @@ tmy2_data = {
 tm2 = TMY2(length=200)
 tm2.write(tmy2_data, 10)
 tm2.print()
+tm2.export('test.tm2')
 
 pass
