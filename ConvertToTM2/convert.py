@@ -4,8 +4,8 @@ from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
 class TMY2:
     def __init__(self, length=8760):
         self.length = length
-        self.header = Line(HEADER_ELEMENTS_POS, line_len=59)
-        self.lines = [Line(DATA_ELEMENTS_POS, line_len=142) for _ in range(self.length)]
+        self.header = Record(HEADER_ELEMENTS_POS, line_len=59)
+        self.records = [Record(DATA_ELEMENTS_POS, line_len=142) for _ in range(self.length)]
 
     def write(self, data, start=0):
         data_len = len(data['hour'])
@@ -13,16 +13,16 @@ class TMY2:
             values = {}
             for key in data:
                 values.update({key: data[key][line_index]})
-            self.lines[start + line_index].set_values(values)
+            self.records[start + line_index].set_values(values)
 
     def print(self):
-        for line in self.lines:
-            print("".join(line.line))
+        for line in self.records:
+            print("".join(line.data))
 
 
-class Line:
+class Record:
     def __init__(self, file_format, line_len):
-        self.line = list(' ' * line_len)
+        self.data = list(' ' * line_len)
         self.format = file_format
 
     def set_values(self, values):
@@ -37,4 +37,4 @@ class Line:
         if 'factor' in self.format[parameter].keys():
             value = value / self.format[parameter]['factor']
 
-        self.line[start_pos:end_pos] = f"{int(value):0{entry_len}d}"
+        self.data[start_pos:end_pos] = f"{int(value):0{entry_len}d}"
