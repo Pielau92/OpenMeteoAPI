@@ -32,5 +32,9 @@ class Line:
     def set_value(self, parameter, value):
         start_pos = self.format[parameter]['value'][0] - 1
         end_pos = self.format[parameter]['value'][1]
-        self.line[start_pos:end_pos] = str(value).ljust(end_pos - start_pos)
+        entry_len = end_pos - start_pos
 
+        if 'factor' in self.format[parameter].keys():
+            value = value / self.format[parameter]['factor']
+
+        self.line[start_pos:end_pos] = f"{int(value):0{entry_len}d}"
