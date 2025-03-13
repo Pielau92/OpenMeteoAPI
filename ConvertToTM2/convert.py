@@ -4,8 +4,8 @@ from tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
 class TMY2:
     def __init__(self, length=8760):
         self.length = length
-        self.header = Line(HEADER_ELEMENTS_POS)
-        self.lines = [Line(DATA_ELEMENTS_POS) for _ in range(self.length)]
+        self.header = Line(HEADER_ELEMENTS_POS, line_len=59)
+        self.lines = [Line(DATA_ELEMENTS_POS, line_len=142) for _ in range(self.length)]
 
     def write(self, data):
 
@@ -21,7 +21,7 @@ class TMY2:
 
 
 class Line:
-    def __init__(self, file_format, line_len=59):
+    def __init__(self, file_format, line_len):
         self.line = list(' ' * line_len)
         self.format = file_format
 
