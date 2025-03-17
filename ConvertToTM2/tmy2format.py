@@ -6,24 +6,26 @@
 #   tuple (e.g. (1, 2)) = position from...to (e.g. from 1 to 2 included))
 
 HEADER_ELEMENTS_POS = {
-    'wban': (2, 6),
-    'city': (8, 29),
-    'state': (31, 32),
-    'timezone': (34, 36),
+    'wban': {'value': (2, 6)},
+    'city': {'value': (8, 29)},
+    'state': {'value': (31, 32)},
+    'timezone': {'value': (34, 36)},
 
-    'latitude': {
-        'north': 38,
-        'degrees': (40, 41),
-        'minutes': (43, 44),
-    },
+    'latitude': {'value': (38, 44),
+                 'north': 38,
+                 'degrees': (40, 41),
+                 'minutes': (43, 44),
+                 },
 
     'longitude': {
+        'value': (46, 53),
         'north': 46,
         'degrees': (48, 50),
         'minutes': (52, 53),
     },
 
-    'elevation': (56, 59)
+    # NOTE: in source material the field position for elevation is 56-59, seems to be an error though
+    'elevation': {'value': (57, 59)}
 }
 
 # endregion
@@ -102,7 +104,7 @@ DATA_ELEMENTS_POS = {
     # total sky cover [10 %]
     'total_sky_cover': {
         'value': (60, 61),
-'factor': 10,
+        'factor': 10,
         'source_flag': 62,
         'uncertainty_flag': 63,
     },
@@ -110,7 +112,7 @@ DATA_ELEMENTS_POS = {
     # opaque sky cover [10 %]
     'opaque_sky_cover': {
         'value': (64, 65),
-'factor': 10,
+        'factor': 10,
         'source_flag': 66,
         'uncertainty_flag': 67,
     },
@@ -118,7 +120,7 @@ DATA_ELEMENTS_POS = {
     # dry bulb temperature [0.1 °C]
     'dry_bulb_temp': {
         'value': (68, 71),
-'factor': 0.1,
+        'factor': 0.1,
         'source_flag': 72,
         'uncertainty_flag': 73,
     },
@@ -126,7 +128,7 @@ DATA_ELEMENTS_POS = {
     # dew point temperature [0.1 °C]
     'dew_point_temp': {
         'value': (74, 77),
-'factor': 0.1,
+        'factor': 0.1,
         'source_flag': 78,
         'uncertainty_flag': 79,
     },
@@ -155,7 +157,7 @@ DATA_ELEMENTS_POS = {
     # wind speed [0.1 m/s]
     'wind_speed': {
         'value': (96, 98),
-'factor': 0.1,
+        'factor': 0.1,
         'source_flag': 99,
         'uncertainty_flag': 100,
     },
@@ -163,7 +165,7 @@ DATA_ELEMENTS_POS = {
     # visibility [0.1 km]
     'visibility': {
         'value': (101, 104),
-'factor': 0.1,
+        'factor': 0.1,
         'source_flag': 105,
         'uncertainty_flag': 106,
     },

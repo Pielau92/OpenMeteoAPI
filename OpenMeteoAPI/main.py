@@ -79,8 +79,8 @@ tmy2_data = {
     'rel_hum': hourly_dataframe['relative_humidity_2m'].to_list()
 }
 
-tm2 = TMY2(length=200)
-tm2.write(tmy2_data, 10)
+tm2 = TMY2(params['latitude'], params['longitude'], time_zone=1, length=200)
+tm2.write(tmy2_data, start=10)
 tm2.print()
 tm2.export('test.tm2')
 
