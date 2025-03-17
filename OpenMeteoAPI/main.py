@@ -45,13 +45,26 @@ def get_hourly_values(response, variables):
     return hourly_data
 
 
-# Make sure all required weather variables are listed here
-# The order of variables in hourly or daily is important to assign them correctly below
-variables = ["temperature_2m", "relative_humidity_2m"]
+# interface between OpenMeteo and tmy2 format (corresponding variable names as tuples)
+interface = [
+    ("temperature_2m", 'dry_bulb_temp'),
+    ("relative_humidity_2m", 'rel_hum'),
+    ("dew_point_2m", 'dew_point_temp'),
+    ("rain", 'precipitable_water'),
+    ("visibility", 'visibility'),
+    ("cloud_cover", 'total_sky_cover'),
+    ("surface_pressure", 'atmos_pressure'),
+    ("wind_speed_10m", 'wind_speed'),
+    ("wind_direction_10m", 'wind_dir'),
+    ("diffuse_radiation", 'diff_hor_rad'),
+    ("direct_radiation", 'dir_norm_rad'),
+]
+
+openmeteo_variables = [varnames[0] for varnames in interface]
 params = {
     "latitude": 48.2085,
     "longitude": 16.3721,
-    "hourly": variables,
+    "hourly": openmeteo_variables,
     "timezone": "auto"
 }
 
@@ -64,20 +77,21 @@ response = responses[0]
 print_response(response)
 
 # extract hourly data
-hourly_data = get_hourly_values(response, variables)
+hourly_data = get_hourly_values(response, openmeteo_variables)
 
 # convert dictionary into pandas DataFrame
 hourly_dataframe = pd.DataFrame(hourly_data)
-print(hourly_dataframe)
+# print(hourly_dataframe)
 
 tmy2_data = {
     'year': hourly_dataframe.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
     'month': hourly_dataframe.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
     'day': hourly_dataframe.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
     'hour': hourly_dataframe.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
-    'dry_bulb_temp': hourly_dataframe['temperature_2m'].to_list(),
-    'rel_hum': hourly_dataframe['relative_humidity_2m'].to_list()
 }
+
+for _varnames in interface:
+    tmy2_data[_varnames[1]] = hourly_dataframe[_varnames[0]].to_list()
 
 tm2 = TMY2(params['latitude'], params['longitude'], time_zone=1, length=200)
 tm2.write(tmy2_data, start=10)
