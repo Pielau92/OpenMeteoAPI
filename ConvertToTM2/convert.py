@@ -1,5 +1,7 @@
 from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
 
+import datetime
+
 
 class TMY2:
     def __init__(self, lat: float, long: float, time_zone: int, length: int = 8760) -> None:
@@ -51,6 +53,24 @@ class TMY2:
             for record in self.records:
                 f.write('\n')  # new line
                 f.write("".join(record.data))  # write record
+
+    def fill_datetime_column(self, year: int) -> None:
+        """Fill the datetime column.
+
+        :param int year: year of the dataset
+        """
+
+        date = datetime.datetime(year, month=1, day=1, hour=0)
+        dt = datetime.timedelta(hours=1)
+
+        for record in self.records:
+            record.set_values(values={
+                'year': int(repr(date.year)[-2:]),
+                'month': date.month,
+                'day': date.day,
+                'hour': date.hour,
+            })
+            date += dt
 
 
 class Record:
