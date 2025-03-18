@@ -33,7 +33,7 @@ class TMY2:
                 values.update({key: data[key][data_index]})
 
             # set values from all key-value pairs individually
-            self.records[start + data_index].set_values(values)
+            self.records[start + data_index].set_values(values) # todo: Schaltjahre führen hier zu einem Fehler!
 
     def print(self) -> None:
         """Print all records."""

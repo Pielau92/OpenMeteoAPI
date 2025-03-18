@@ -45,3 +45,37 @@ def hour_of_year(year, month, day, hour):
     beginning_of_year = datetime.datetime(year, month=1, day=1, hour=1)
     date = datetime.datetime(year=year, month=month, day=day, hour=hour)
     return int((date - beginning_of_year).total_seconds() // 3600)
+
+
+def request_data(url, latitude, longitude, variables, year=None):
+    # code generated and modified from https://open-meteo.com/en/docs
+
+    # API request parameters
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": variables,
+        "timezone": "auto"
+    }
+
+    if year:
+        params.update({
+            "start_date": f"{year}-01-01",
+            "end_date": f"{year}-12-31"
+        })
+
+    # set up client, send request and receive response
+    client = setup_client()
+    responses = client.weather_api(url, params=params)
+
+    # process first location (add a for-loop for multiple locations or weather models)
+    response = responses[0]
+    print_response(response)
+
+    # extract hourly data as dict
+    hourly_data = get_hourly_values(response, variables)
+
+    # convert dictionary into pandas DataFrame
+    hourly_dataframe = pd.DataFrame(hourly_data)
+
+    return hourly_dataframe, response

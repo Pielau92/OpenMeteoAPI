@@ -1,11 +1,13 @@
 # code generated and modified from https://open-meteo.com/en/docs
 
 from ConvertToTM2.convert import TMY2
-from openmeteo_api import setup_client, print_response, get_hourly_values, hour_of_year
+from openmeteo_api import setup_client, print_response, get_hourly_values, hour_of_year, request_data
 
 import pandas as pd
 
-URL = "https://api.open-meteo.com/v1/forecast"  # API url
+# API URLs
+URL_forecast = "https://api.open-meteo.com/v1/forecast"
+URL_historical = "https://archive-api.open-meteo.com/v1/archive"
 
 # interface between OpenMeteo and tmy2 format (corresponding variable names as tuples)
 interface = [
@@ -25,38 +27,23 @@ interface = [
 # list of variables packed in request to OpenMeteo
 openmeteo_variables = [varnames[0] for varnames in interface]
 
-# API request parameters
-params = {
-    "latitude": 48.2085,
-    "longitude": 16.3721,
-    "hourly": openmeteo_variables,
-    "timezone": "auto"
-}
+latitude = 48.2085
+longitude = 16.3721
 
-# set up client, send request and receive response
-client = setup_client()
-responses = client.weather_api(URL, params=params)
+forecast_data, forecast_response = request_data(URL_forecast, latitude, longitude, openmeteo_variables)
+historical_data, historical_response = request_data(URL_historical, latitude, longitude, openmeteo_variables, 2023)
 
-# process first location (add a for-loop for multiple locations or weather models)
-response = responses[0]
-print_response(response)
-
-# extract hourly data as dict
-hourly_data = get_hourly_values(response, openmeteo_variables)
-
-# convert dictionary into pandas DataFrame
-hourly_dataframe = pd.DataFrame(hourly_data)
-# print(hourly_dataframe)
+# region FORECAST
 
 tmy2_data = {
-    'year': hourly_dataframe.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
-    'month': hourly_dataframe.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
-    'day': hourly_dataframe.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
-    'hour': hourly_dataframe.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+    'year': forecast_data.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
+    'month': forecast_data.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
+    'day': forecast_data.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
+    'hour': forecast_data.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
 }
 
 for _varnames in interface:
-    tmy2_data[_varnames[1]] = hourly_dataframe[_varnames[0]].to_list()
+    tmy2_data[_varnames[1]] = forecast_data[_varnames[0]].to_list()
 
 first_hour = hour_of_year(
     year=int(tmy2_data['year'][0]),
@@ -64,13 +51,36 @@ first_hour = hour_of_year(
     day=int(tmy2_data['day'][0]),
     hour=int(tmy2_data['hour'][0]))
 
-tm2 = TMY2(lat=response.Latitude(), long=response.Longitude(), time_zone=response.UtcOffsetSeconds() / 360,
-           elevation=int(response.Elevation()))
+tm2 = TMY2(lat=forecast_response.Latitude(), long=forecast_response.Longitude(), time_zone=forecast_response.UtcOffsetSeconds() / 360,
+           elevation=int(forecast_response.Elevation()))
 
-year = int(hourly_dataframe.date.dt.year[0])
+year = int(forecast_data.date.dt.year[0])
 tm2.fill_datetime_column(year)
 tm2.write(tmy2_data, start=first_hour)
 # tm2.print()
-tm2.export('test.tm2')
+tm2.export('test_forecast.tm2')
 
-pass
+# endregion
+
+# region HISTORICAL
+
+tmy2_data = {
+    'year': historical_data.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
+    'month': historical_data.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
+    'day': historical_data.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
+    'hour': historical_data.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+}
+
+for _varnames in interface:
+    tmy2_data[_varnames[1]] = historical_data[_varnames[0]].to_list()
+
+tm2 = TMY2(lat=historical_response.Latitude(), long=historical_response.Longitude(), time_zone=historical_response.UtcOffsetSeconds() / 360,
+           elevation=int(historical_response.Elevation()))
+
+year = int(historical_data.date.dt.year[0])
+tm2.fill_datetime_column(year)
+tm2.write(tmy2_data)
+# tm2.print()
+tm2.export('test_historical.tm2')
+
+# endregion
