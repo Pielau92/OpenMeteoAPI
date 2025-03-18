@@ -2,6 +2,7 @@
 
 import openmeteo_requests
 import requests_cache
+import datetime
 
 import pandas as pd
 
@@ -43,6 +44,12 @@ def get_hourly_values(response, variables):
         hourly_data[variable] = hourly.Variables(index).ValuesAsNumpy()
 
     return hourly_data
+
+
+def hour_of_year(year, month, day, hour):
+    beginning_of_year = datetime.datetime(year, month=1, day=1, hour=1)
+    date = datetime.datetime(year=year, month=month, day=day, hour=hour)
+    return int((date - beginning_of_year).total_seconds() // 3600)
 
 
 # interface between OpenMeteo and tmy2 format (corresponding variable names as tuples)
@@ -93,8 +100,14 @@ tmy2_data = {
 for _varnames in interface:
     tmy2_data[_varnames[1]] = hourly_dataframe[_varnames[0]].to_list()
 
-tm2 = TMY2(params['latitude'], params['longitude'], time_zone=1, length=200)
-tm2.write(tmy2_data, start=10)
+first_hour = hour_of_year(
+    year=int(tmy2_data['year'][0]),
+    month=int(tmy2_data['month'][0]),
+    day=int(tmy2_data['day'][0]),
+    hour=int(tmy2_data['hour'][0]))
+
+tm2 = TMY2(params['latitude'], params['longitude'], time_zone=1)
+tm2.write(tmy2_data, start=first_hour)
 tm2.print()
 tm2.export('test.tm2')
 
