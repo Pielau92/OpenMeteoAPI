@@ -4,7 +4,7 @@ import datetime
 
 
 class TMY2:
-    def __init__(self, lat: float, long: float, time_zone: int, length: int = 8760) -> None:
+    def __init__(self, lat: float, long: float, time_zone: int, elevation: int, length: int = 8760) -> None:
         """Initialize tmy2 conversion.
 
         For more information about the tmy2 format, see "The User's Manual for TMY2s" under
@@ -13,7 +13,7 @@ class TMY2:
         :param int length: length of tm2 file (number of records, typically 1 record per hour for a year, so 8760)
         """
         self.length = length
-        self.header = HeaderRecord(lat, long, time_zone)
+        self.header = HeaderRecord(lat=lat, long=long, time_zone=time_zone, elevation=elevation)
         self.header.update()
         self.records = [DataRecord() for _ in range(self.length)]
 

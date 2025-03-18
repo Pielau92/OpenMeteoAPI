@@ -64,7 +64,8 @@ first_hour = hour_of_year(
     day=int(tmy2_data['day'][0]),
     hour=int(tmy2_data['hour'][0]))
 
-tm2 = TMY2(lat=response.Latitude(), long=response.Longitude(), time_zone=response.UtcOffsetSeconds()/3600)
+tm2 = TMY2(lat=response.Latitude(), long=response.Longitude(), time_zone=response.UtcOffsetSeconds() / 360,
+           elevation=int(response.Elevation()))
 
 year = int(hourly_dataframe.date.dt.year[0])
 tm2.fill_datetime_column(year)
