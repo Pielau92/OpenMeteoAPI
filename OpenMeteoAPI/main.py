@@ -1,56 +1,11 @@
 # code generated and modified from https://open-meteo.com/en/docs
 
-import openmeteo_requests
-import requests_cache
-import datetime
+from ConvertToTM2.convert import TMY2
+from openmeteo_api import setup_client, print_response, get_hourly_values, hour_of_year
 
 import pandas as pd
 
-from retry_requests import retry
-from ConvertToTM2.convert import TMY2
-
 URL = "https://api.open-meteo.com/v1/forecast"  # API url
-
-
-def setup_client():
-    """Set up the Open-Meteo API client with cache and retry on error."""
-    cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
-    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
-    return openmeteo_requests.Client(session=retry_session)
-
-
-def print_response(response):
-    """Print response."""
-    print(f"Coordinates {response.Latitude()}°N {response.Longitude()}°E")
-    print(f"Elevation {response.Elevation()} m asl")
-    print(f"Timezone {response.Timezone()} {response.TimezoneAbbreviation()}")
-    print(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
-
-
-def get_hourly_values(response, variables):
-    """Process hourly data. The order of variables needs to be the same as requested."""
-    hourly = response.Hourly()
-
-    time_data = pd.date_range(
-        start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
-        end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
-        freq=pd.Timedelta(seconds=hourly.Interval()),
-        inclusive="left")
-
-    # create hourly data dictionary
-    hourly_data = {"date": time_data}
-
-    for index, variable in enumerate(variables):
-        hourly_data[variable] = hourly.Variables(index).ValuesAsNumpy()
-
-    return hourly_data
-
-
-def hour_of_year(year, month, day, hour):
-    beginning_of_year = datetime.datetime(year, month=1, day=1, hour=1)
-    date = datetime.datetime(year=year, month=month, day=day, hour=hour)
-    return int((date - beginning_of_year).total_seconds() // 3600)
-
 
 # interface between OpenMeteo and tmy2 format (corresponding variable names as tuples)
 interface = [
@@ -67,7 +22,10 @@ interface = [
     ("direct_radiation", 'dir_norm_rad'),
 ]
 
+# list of variables packed in request to OpenMeteo
 openmeteo_variables = [varnames[0] for varnames in interface]
+
+# API request parameters
 params = {
     "latitude": 48.2085,
     "longitude": 16.3721,
@@ -107,6 +65,9 @@ first_hour = hour_of_year(
     hour=int(tmy2_data['hour'][0]))
 
 tm2 = TMY2(params['latitude'], params['longitude'], time_zone=1)
+
+year = int(hourly_dataframe.date.dt.year[0])
+tm2.fill_datetime_column(year)
 tm2.write(tmy2_data, start=first_hour)
 tm2.print()
 tm2.export('test.tm2')
