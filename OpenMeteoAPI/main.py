@@ -13,7 +13,7 @@ interface = [
     ("relative_humidity_2m", 'rel_hum'),
     ("dew_point_2m", 'dew_point_temp'),
     ("rain", 'precipitable_water'),
-    ("visibility", 'visibility'),
+    # ("visibility", 'visibility'),
     ("cloud_cover", 'total_sky_cover'),
     ("surface_pressure", 'atmos_pressure'),
     ("wind_speed_10m", 'wind_speed'),
@@ -34,14 +34,14 @@ params = {
 }
 
 # set up client, send request and receive response
-openmeteo = setup_client()
-responses = openmeteo.weather_api(URL, params=params)
+client = setup_client()
+responses = client.weather_api(URL, params=params)
 
-# Process first location. Add a for-loop for multiple locations or weather models
+# process first location (add a for-loop for multiple locations or weather models)
 response = responses[0]
 print_response(response)
 
-# extract hourly data
+# extract hourly data as dict
 hourly_data = get_hourly_values(response, openmeteo_variables)
 
 # convert dictionary into pandas DataFrame
@@ -64,12 +64,12 @@ first_hour = hour_of_year(
     day=int(tmy2_data['day'][0]),
     hour=int(tmy2_data['hour'][0]))
 
-tm2 = TMY2(params['latitude'], params['longitude'], time_zone=1)
+tm2 = TMY2(lat=response.Latitude(), long=response.Longitude(), time_zone=response.UtcOffsetSeconds()/3600)
 
 year = int(hourly_dataframe.date.dt.year[0])
 tm2.fill_datetime_column(year)
 tm2.write(tmy2_data, start=first_hour)
-tm2.print()
+# tm2.print()
 tm2.export('test.tm2')
 
 pass
