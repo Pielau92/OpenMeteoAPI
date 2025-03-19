@@ -1,4 +1,5 @@
 from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
+from OpenMeteoAPI.utils import *
 
 import datetime
 
@@ -33,7 +34,7 @@ class TMY2:
                 values.update({key: data[key][data_index]})
 
             # set values from all key-value pairs individually
-            self.records[start + data_index].set_values(values) # todo: Schaltjahre führen hier zu einem Fehler!
+            self.records[start + data_index].set_values(values)  # todo: Schaltjahre führen hier zu einem Fehler!
 
     def print(self) -> None:
         """Print all records."""
@@ -157,24 +158,6 @@ class HeaderRecord(Record):
 
             # write entry into record - right-aligned and with 0s at unused digits
             self.data[start_pos:end_pos] = getattr(self, key)
-
-
-def get_lat_long_minutes(lat: float, long: float) -> (int, int):
-    """Get latitude/longitude minutes from float latitude/longitude values.
-
-    :param float lat: latitude
-    :param float long: longitude
-    :return:
-        - lat_min - latitude minutes
-        - long_min - longitude minutes
-    """
-
-    lat_int = int(lat)
-    long_int = int(long)
-    lat_min = int((lat - lat_int) * 60)
-    long_min = int((long - long_int) * 60)
-
-    return lat_min, long_min
 
 
 class DataRecord(Record):

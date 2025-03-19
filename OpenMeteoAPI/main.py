@@ -1,5 +1,6 @@
 from ConvertToTM2.convert import TMY2
-from openmeteo_api import setup_client, get_hourly_values, hour_of_year, request_historical_data, request_forecast_data
+from openmeteo_api import setup_client, get_hourly_values, request_historical_data, request_forecast_data
+from OpenMeteoAPI.utils import *
 
 import pandas as pd
 

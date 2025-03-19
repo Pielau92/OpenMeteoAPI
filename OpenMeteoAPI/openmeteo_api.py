@@ -2,7 +2,6 @@
 
 import openmeteo_requests
 import requests_cache
-import datetime
 
 import pandas as pd
 
@@ -56,21 +55,6 @@ def get_hourly_values(response, variables: list[str]) -> dict:
         hourly_data[variable] = hourly.Variables(index).ValuesAsNumpy()
 
     return hourly_data
-
-
-def hour_of_year(year: int, month: int, day: int, hour: int) -> int:
-    """Return hour of year (from 0 to 8760) of a specified datetime.
-
-    :param int year: year
-    :param int month: month
-    :param int day: day
-    :param int hour: hour
-    :return: hour of year (from 0 to 8760)
-    """
-
-    beginning_of_year = datetime.datetime(year, month=1, day=1, hour=1)
-    date = datetime.datetime(year=year, month=month, day=day, hour=hour)
-    return int((date - beginning_of_year).total_seconds() // 3600) + 1
 
 
 def request_historical_data(client, params: dict, year: int):
