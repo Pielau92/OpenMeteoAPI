@@ -33,8 +33,8 @@ def get_hourly_values(response, variables):
     hourly = response.Hourly()
 
     time_data = pd.date_range(
-        start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
-        end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+        start=pd.to_datetime(hourly.Time() + response.UtcOffsetSeconds(), unit="s", utc=True, ),
+        end=pd.to_datetime(hourly.TimeEnd() + response.UtcOffsetSeconds(), unit="s", utc=True),
         freq=pd.Timedelta(seconds=hourly.Interval()),
         inclusive="left")
 
@@ -50,7 +50,7 @@ def get_hourly_values(response, variables):
 def hour_of_year(year, month, day, hour):
     beginning_of_year = datetime.datetime(year, month=1, day=1, hour=1)
     date = datetime.datetime(year=year, month=month, day=day, hour=hour)
-    return int((date - beginning_of_year).total_seconds() // 3600)
+    return int((date - beginning_of_year).total_seconds() // 3600) + 1
 
 
 def request_historical_data(client, params, year):
