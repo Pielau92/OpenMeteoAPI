@@ -1,3 +1,5 @@
+# code generated and modified from https://open-meteo.com/en/docs
+
 import openmeteo_requests
 import requests_cache
 import datetime
@@ -5,6 +7,10 @@ import datetime
 import pandas as pd
 
 from retry_requests import retry
+
+# API URLs
+URL_forecast = "https://api.open-meteo.com/v1/forecast"
+URL_historical = "https://archive-api.open-meteo.com/v1/archive"
 
 
 def setup_client():
@@ -47,35 +53,22 @@ def hour_of_year(year, month, day, hour):
     return int((date - beginning_of_year).total_seconds() // 3600)
 
 
-def request_data(url, latitude, longitude, variables, year=None):
-    # code generated and modified from https://open-meteo.com/en/docs
+def request_historical_data(client, params, year):
+    # add start and end date of historical dataset
+    params = params | {"start_date": f"{year}-01-01", "end_date": f"{year}-12-31"}
 
-    # API request parameters
-    params = {
-        "latitude": latitude,
-        "longitude": longitude,
-        "hourly": variables,
-        "timezone": "auto"
-    }
-
-    if year:
-        params.update({
-            "start_date": f"{year}-01-01",
-            "end_date": f"{year}-12-31"
-        })
-
-    # set up client, send request and receive response
-    client = setup_client()
-    responses = client.weather_api(url, params=params)
-
-    # process first location (add a for-loop for multiple locations or weather models)
-    response = responses[0]
+    # get response
+    responses = client.weather_api(URL_historical, params=params)
+    response = responses[0]  # process first location (add a for-loop for multiple locations or weather models)
     print_response(response)
 
-    # extract hourly data as dict
-    hourly_data = get_hourly_values(response, variables)
+    return response
 
-    # convert dictionary into pandas DataFrame
-    hourly_dataframe = pd.DataFrame(hourly_data)
 
-    return hourly_dataframe, response
+def request_forecast_data(client, params):
+    # get response
+    responses = client.weather_api(URL_forecast, params=params)
+    response = responses[0]  # process first location (add a for-loop for multiple locations or weather models)
+    print_response(response)
+
+    return response
