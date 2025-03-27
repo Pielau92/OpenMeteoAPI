@@ -35,16 +35,22 @@ params = {
 }
 
 # send API requests
+"""due to a delay the past day cannot be requested through historical weather API, use the forecast API with the
+'past_days' parameter instead"""
 historical_response = request_historical_data(client, params, year)
 forecast_response = request_forecast_data(client, params)
+past_day_response = request_forecast_data(client, params | {'past_days': 1})
 
 # convert response into dictionary
 historical_dict = get_hourly_values(historical_response, openmeteo_variables)
 forecast_dict = get_hourly_values(forecast_response, openmeteo_variables)
+past_day_dict = get_hourly_values(past_day_response, openmeteo_variables)
 
 # convert dictionary into pandas DataFrame
 historical_df = pd.DataFrame(historical_dict)
 forecast_df = pd.DataFrame(forecast_dict)
+past_day_df = pd.DataFrame(past_day_dict)
+past_day_df = past_day_df[0:24]  # take only the past day
 
 # remove leap day during leap years
 if is_leap_year(year):
@@ -120,3 +126,46 @@ historical_tm2.write(tmy2_data)
 historical_tm2.export('test_historical.tm2')
 
 # endregion
+
+# region PAST DAY
+
+# initialize tmy2 conversion
+past_day_tm2 = TMY2(
+    lat=past_day_response.Latitude(),
+    long=past_day_response.Longitude(),
+    time_zone=int(past_day_response.UtcOffsetSeconds() / 3600),
+    elevation=int(past_day_response.Elevation())
+)
+
+# fill datetime column
+past_day_tm2.fill_datetime_column(year=int(past_day_df.date.dt.year[0]))
+
+# collect tmy2 data
+tmy2_data = {
+    'year': past_day_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
+    'month': past_day_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
+    'day': past_day_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
+    'hour': past_day_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+}
+for _varnames in INTERFACE:
+    tmy2_data[_varnames[1]] = past_day_df[_varnames[0]].to_list()
+
+# determine at which hour of the year the data begins
+first_hour = hour_of_year(
+    year=int(tmy2_data['year'][0]),
+    month=int(tmy2_data['month'][0]),
+    day=int(tmy2_data['day'][0]),
+    hour=int(tmy2_data['hour'][0]))
+
+# write tmy2 data into tmy2 records
+past_day_tm2.write(tmy2_data, start=first_hour)
+# tm2.print()
+
+past_day_tm2.export('test_past_day.tm2')
+
+# endregion
+
+# csv exports
+historical_df.to_csv('data/historical.csv')
+forecast_df.to_csv('data/forecast.csv')
+past_day_df.to_csv('data/past_day.csv')
