@@ -92,7 +92,7 @@ first_hour = hour_of_year(
 forecast_tm2.write(tmy2_data, start=first_hour)
 # tm2.print()
 
-forecast_tm2.export('test_forecast.tm2')
+forecast_tm2.export('../data/test_forecast.tm2')
 
 # endregion
 
@@ -123,7 +123,7 @@ for _varnames in INTERFACE:
 historical_tm2.write(tmy2_data)
 # tm2.print()
 
-historical_tm2.export('test_historical.tm2')
+historical_tm2.export('../data/test_historical.tm2')
 
 # endregion
 
@@ -161,11 +161,11 @@ first_hour = hour_of_year(
 past_day_tm2.write(tmy2_data, start=first_hour)
 # tm2.print()
 
-past_day_tm2.export('test_past_day.tm2')
+past_day_tm2.export('../data/test_past_day.tm2')
 
 # endregion
 
 # csv exports
-historical_df.to_csv('data/historical.csv')
-forecast_df.to_csv('data/forecast.csv')
-past_day_df.to_csv('data/past_day.csv')
+historical_df.to_csv('../data/historical.csv')
+forecast_df.to_csv('../data/forecast.csv')
+past_day_df.to_csv('../data/past_day.csv')
