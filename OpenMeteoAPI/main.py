@@ -25,7 +25,7 @@ openmeteo_variables = [varnames[0] for varnames in INTERFACE]
 
 latitude = 48.2085
 longitude = 16.3721
-year = 2023  # year of historical dataset
+year = datetime.date.today().year - 1  # year of historical dataset
 
 params = {
     "latitude": latitude,
