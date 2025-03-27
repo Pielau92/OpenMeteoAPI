@@ -1,4 +1,5 @@
 # code generated and modified from https://open-meteo.com/en/docs
+import datetime
 
 import openmeteo_requests
 import requests_cache
@@ -66,8 +67,14 @@ def request_historical_data(client, params: dict, year: int):
     :return: OpenMeteo API response
     """
 
+    # if data from current year is requested, limit to current day instead of whole year
+    if year == datetime.date.today().year:
+        end_date = str(datetime.date.today())
+    else:
+        end_date = f'{year}-12-31'
+
     # add start and end date of historical dataset
-    params = params | {"start_date": f"{year}-01-01", "end_date": f"{year}-12-31"}
+    params = params | {'start_date': f'{year}-01-01', 'end_date': end_date}
 
     # get response
     responses = client.weather_api(URL_historical, params=params)
