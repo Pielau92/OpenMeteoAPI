@@ -42,10 +42,7 @@ forecast_response = request_forecast_data(client, params)
 historical_dict = get_hourly_values(historical_response, openmeteo_variables)
 forecast_dict = get_hourly_values(forecast_response, openmeteo_variables)
 
-# todo: Datum wird in time zone +0 angegeben, also ist die Stundenspalte (wenn man eine andere Zeitzone hat) um
-#  eine/mehrere Stunden verschoben. Deshalb ist eine entsprechende Korrektur an dieser Stelle nötig.
-
-# convert response into pandas DataFrame
+# convert dictionary into pandas DataFrame
 historical_df = pd.DataFrame(historical_dict)
 forecast_df = pd.DataFrame(forecast_dict)
 
@@ -68,24 +65,27 @@ forecast_tm2 = TMY2(
 # fill datetime column
 forecast_tm2.fill_datetime_column(year=int(forecast_df.date.dt.year[0]))
 
+# collect tmy2 data
 tmy2_data = {
     'year': forecast_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
     'month': forecast_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
     'day': forecast_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
     'hour': forecast_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
 }
-
 for _varnames in INTERFACE:
     tmy2_data[_varnames[1]] = forecast_df[_varnames[0]].to_list()
 
+# determine at which hour of the year the data begins
 first_hour = hour_of_year(
     year=int(tmy2_data['year'][0]),
     month=int(tmy2_data['month'][0]),
     day=int(tmy2_data['day'][0]),
     hour=int(tmy2_data['hour'][0]))
 
+# write tmy2 data into tmy2 records
 forecast_tm2.write(tmy2_data, start=first_hour)
 # tm2.print()
+
 forecast_tm2.export('test_forecast.tm2')
 
 # endregion
@@ -103,18 +103,20 @@ historical_tm2 = TMY2(
 # fill datetime column
 historical_tm2.fill_datetime_column(year)
 
+# collect tmy2 data
 tmy2_data = {
     'year': historical_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
     'month': historical_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
     'day': historical_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
     'hour': historical_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
 }
-
 for _varnames in INTERFACE:
     tmy2_data[_varnames[1]] = historical_df[_varnames[0]].to_list()
 
+# write tmy2 data into tmy2 records
 historical_tm2.write(tmy2_data)
 # tm2.print()
+
 historical_tm2.export('test_historical.tm2')
 
 # endregion

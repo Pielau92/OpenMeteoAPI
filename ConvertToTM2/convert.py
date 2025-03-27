@@ -21,6 +21,8 @@ class TMY2:
     def write(self, data: dict, start: int = 0) -> None:
         """Write weather dataset into records.
 
+        TMY2 format does not support leap year, therfore they habe to be removed beforehand.
+
         :param dict data: dict with parameter as key and data as list
         :param int start: starting position of the dataset within the tm2 file (0-8759)
         """
@@ -34,7 +36,7 @@ class TMY2:
                 values.update({key: data[key][data_index]})
 
             # set values from all key-value pairs individually
-            self.records[start + data_index].set_values(values)  # todo: Schaltjahre führen hier zu einem Fehler!
+            self.records[start + data_index].set_values(values)
 
     def print(self) -> None:
         """Print all records."""
