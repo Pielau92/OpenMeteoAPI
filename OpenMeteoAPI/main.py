@@ -49,6 +49,12 @@ forecast_dict = get_hourly_values(forecast_response, openmeteo_variables)
 historical_df = pd.DataFrame(historical_dict)
 forecast_df = pd.DataFrame(forecast_dict)
 
+# remove leap day during leap years
+if is_leap_year(year):
+    historical_df = historical_df[~((historical_df.date.dt.month == 2) & (historical_df.date.dt.day == 29))]
+if is_leap_year(forecast_df.date.dt.year[0]):
+    forecast_df = forecast_df[~((forecast_df.date.dt.month == 2) & (forecast_df.date.dt.day == 29))]
+
 # region FORECAST
 
 # initialize tmy2 conversion
