@@ -32,3 +32,8 @@ def hour_of_year(year: int, month: int, day: int, hour: int) -> int:
     beginning_of_year = datetime.datetime(year, month=1, day=1, hour=1)
     date = datetime.datetime(year=year, month=month, day=day, hour=hour)
     return int((date - beginning_of_year).total_seconds() // 3600) + 1
+
+
+def is_leap_year(year: int) -> bool:
+    """Check if the year is a leap year."""
+    return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
