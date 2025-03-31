@@ -40,7 +40,7 @@ params = {
 'past_days' parameter instead"""
 this_year_response = request_historical_data(client, params, this_year)
 last_year_response = request_historical_data(client, params, last_year)
-forecast_response = request_forecast_data(client, params)
+forecast_response = request_forecast_data(client, params | {'forecast_days': 16})
 past_day_response = request_forecast_data(client, params | {'past_days': 1})
 
 # convert response into dictionary
