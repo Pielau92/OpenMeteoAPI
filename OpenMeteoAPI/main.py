@@ -6,22 +6,52 @@ import pandas as pd
 
 client = setup_client()
 
-# interface between OpenMeteo and tmy2 format (corresponding variable names as 1 value pair per tuple)
-INTERFACE = [
-    ("temperature_2m", 'dry_bulb_temp'),
-    ("relative_humidity_2m", 'rel_hum'),
-    ("dew_point_2m", 'dew_point_temp'),
-    ("rain", 'precipitable_water'),
-    ("cloud_cover", 'total_sky_cover'),
-    ("surface_pressure", 'atmos_pressure'),
-    ("wind_speed_10m", 'wind_speed'),
-    ("wind_direction_10m", 'wind_dir'),
-    ("diffuse_radiation", 'diff_hor_rad'),
-    ("direct_radiation", 'dir_norm_rad'),
-]
+# interface between OpenMeteo and tmy2 format
+INTERFACE = {
+    'temperature_2m': {
+        'tm2_varname': 'dry_bulb_temp',
+        'unit': '°C',
+    },
+    'relative_humidity_2m': {
+        'tm2_varname': 'rel_hum',
+        'unit': '%'
+    },
+    'dew_point_2m': {
+        'tm2_varname': 'dew_point_temp',
+        'unit': '°C'
+    },
+    'rain': {
+        'tm2_varname': 'precipitable_water',
+        'unit': 'mm'
+    },
+    'cloud_cover': {
+        'tm2_varname': 'total_sky_cover',
+        'unit': '%'
+    },
+    'surface_pressure': {
+        'tm2_varname': 'atmos_pressure',
+        'unit': 'hPa'
+    },
+    'wind_speed_10m': {
+        'tm2_varname': 'wind_speed',
+        'unit': 'km/h'
+    },
+    'wind_direction_10m': {
+        'tm2_varname': 'wind_dir',
+        'unit': '°'
+    },
+    'diffuse_radiation': {
+        'tm2_varname': 'diff_hor_rad',
+        'unit': 'W/m²'
+    },
+    'direct_radiation': {
+        'tm2_varname': 'dir_norm_rad',
+        'unit': 'W/m²'
+    }
+}
 
 # list of variables packed in OpenMeteo request
-openmeteo_variables = [varnames[0] for varnames in INTERFACE]
+openmeteo_variables = list(INTERFACE.keys())
 
 latitude = 48.2085
 longitude = 16.3721
@@ -84,8 +114,8 @@ tmy2_data = {
     'day': forecast_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
     'hour': forecast_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
-for _varnames in INTERFACE:
-    tmy2_data[_varnames[1]] = forecast_df[_varnames[0]].to_list()
+for _key in INTERFACE.keys():
+    tmy2_data[INTERFACE[_key]['tm2_varname']] = forecast_df[_key].to_list()
 
 # determine at which hour of the year the data begins
 first_hour = hour_of_year(
@@ -122,8 +152,8 @@ tmy2_data = {
     'day': this_year_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
     'hour': this_year_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
-for _varnames in INTERFACE:
-    tmy2_data[_varnames[1]] = this_year_df[_varnames[0]].to_list()
+for _key in INTERFACE.keys():
+    tmy2_data[INTERFACE[_key]['tm2_varname']] = this_year_df[_key].to_list()
 
 # write tmy2 data into tmy2 records
 this_year_tm2.write(tmy2_data)
@@ -153,8 +183,8 @@ tmy2_data = {
     'day': last_year_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
     'hour': last_year_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
-for _varnames in INTERFACE:
-    tmy2_data[_varnames[1]] = last_year_df[_varnames[0]].to_list()
+for _key in INTERFACE.keys():
+    tmy2_data[INTERFACE[_key]['tm2_varname']] = last_year_df[_key].to_list()
 
 # write tmy2 data into tmy2 records
 last_year_tm2.write(tmy2_data)
@@ -184,8 +214,8 @@ tmy2_data = {
     'day': past_day_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
     'hour': past_day_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
-for _varnames in INTERFACE:
-    tmy2_data[_varnames[1]] = past_day_df[_varnames[0]].to_list()
+for _key in INTERFACE.keys():
+    tmy2_data[INTERFACE[_key]['tm2_varname']] = past_day_df[_key].to_list()
 
 # determine at which hour of the year the data begins
 first_hour = hour_of_year(
@@ -201,6 +231,14 @@ past_day_tm2.write(tmy2_data, start=first_hour)
 past_day_tm2.export('../data/past_day.tm2')
 
 # endregion
+
+# add units to headers
+headers = ['date']
+headers += [_varname + '_' + INTERFACE[_varname]['unit'] for _varname in openmeteo_variables]
+this_year_df.columns = headers
+last_year_df.columns = headers
+forecast_df.columns = headers
+past_day_df.columns = headers
 
 # csv exports
 this_year_df.to_csv(f'../data/year{this_year}.csv')
