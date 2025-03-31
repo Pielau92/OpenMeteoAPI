@@ -2,6 +2,7 @@ from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
 from OpenMeteoAPI.utils import *
 
 import datetime
+from math import isnan
 
 
 class TMY2:
@@ -115,8 +116,9 @@ class Record:
 
         entry_len = end_pos - start_pos  # length of entry
 
-        # if the element has a conversion factor, perform conversion
-        if 'factor' in self.format[key].keys():
+        if isnan(value):  # if value is NaN, insert "missing data" value
+            value = int('9' * entry_len)
+        elif 'factor' in self.format[key].keys():  # if the element has a conversion factor, perform conversion
             value = value / self.format[key]['factor']
 
         # write entry into record - right-aligned and with 0s at unused digits
