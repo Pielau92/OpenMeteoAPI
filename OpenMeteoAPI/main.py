@@ -62,7 +62,8 @@ params = {
     "latitude": latitude,
     "longitude": longitude,
     "hourly": openmeteo_variables,
-    "timezone": "auto"
+    "timezone": "auto",
+    "models": ["icon_global", "icon_eu"],
 }
 
 # send API requests
