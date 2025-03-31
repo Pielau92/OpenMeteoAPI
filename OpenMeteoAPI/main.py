@@ -79,10 +79,10 @@ forecast_tm2.fill_datetime_column(year=int(forecast_df.date.dt.year[0]))
 
 # collect tmy2 data
 tmy2_data = {
-    'year': forecast_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
-    'month': forecast_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
-    'day': forecast_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
-    'hour': forecast_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+    'year': forecast_df.date.dt.year.astype(str).str[-2:].astype(int).to_list(),  # list of years, with format YY
+    'month': forecast_df.date.dt.month.astype(str).str.zfill(2).astype(int).to_list(),  # list of months, with format MM
+    'day': forecast_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
+    'hour': forecast_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
 for _varnames in INTERFACE:
     tmy2_data[_varnames[1]] = forecast_df[_varnames[0]].to_list()
@@ -117,10 +117,10 @@ this_year_tm2.fill_datetime_column(this_year)
 
 # collect tmy2 data
 tmy2_data = {
-    'year': this_year_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
-    'month': this_year_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
-    'day': this_year_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
-    'hour': this_year_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+    'year': this_year_df.date.dt.year.astype(str).str[-2:].astype(int).to_list(),  # list of years, with format YY
+    'month': this_year_df.date.dt.month.astype(str).str.zfill(2).astype(int).to_list(),  # list of months, with format MM
+    'day': this_year_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
+    'hour': this_year_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
 for _varnames in INTERFACE:
     tmy2_data[_varnames[1]] = this_year_df[_varnames[0]].to_list()
@@ -148,10 +148,10 @@ last_year_tm2.fill_datetime_column(last_year)
 
 # collect tmy2 data
 tmy2_data = {
-    'year': last_year_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
-    'month': last_year_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
-    'day': last_year_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
-    'hour': last_year_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+    'year': last_year_df.date.dt.year.astype(str).str[-2:].astype(int).to_list(),  # list of years, with format YY
+    'month': last_year_df.date.dt.month.astype(str).str.zfill(2).astype(int).to_list(),  # list of months, with format MM
+    'day': last_year_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
+    'hour': last_year_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
 for _varnames in INTERFACE:
     tmy2_data[_varnames[1]] = last_year_df[_varnames[0]].to_list()
@@ -179,10 +179,10 @@ past_day_tm2.fill_datetime_column(year=int(past_day_df.date.dt.year[0]))
 
 # collect tmy2 data
 tmy2_data = {
-    'year': past_day_df.date.dt.year.astype(str).str[-2:].to_list(),  # list of years, with format YY
-    'month': past_day_df.date.dt.month.astype(str).str.zfill(2).to_list(),  # list of months, with format MM
-    'day': past_day_df.date.dt.day.astype(str).str.zfill(2).to_list(),  # list of days, with format DD
-    'hour': past_day_df.date.dt.hour.astype(str).str.zfill(2).to_list(),  # list of hours, with format hh
+    'year': past_day_df.date.dt.year.astype(str).str[-2:].astype(int).to_list(),  # list of years, with format YY
+    'month': past_day_df.date.dt.month.astype(str).str.zfill(2).astype(int).to_list(),  # list of months, with format MM
+    'day': past_day_df.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, with format DD
+    'hour': past_day_df.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, with format hh
 }
 for _varnames in INTERFACE:
     tmy2_data[_varnames[1]] = past_day_df[_varnames[0]].to_list()
