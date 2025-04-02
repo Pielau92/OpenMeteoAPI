@@ -1,11 +1,11 @@
 from ConvertToTM2.convert import TMY2
 from ConvertToTM2.tmy2format import OPENMETEO_MAPPING
-from openmeteo_api import setup_client, get_hourly_values, request_historical_data, request_forecast_data
+from openmeteo_api import OpenMeteoClient
 from OpenMeteoAPI.utils import *
 
 import pandas as pd
 
-client = setup_client()
+client = OpenMeteoClient()
 
 # list of variables packed in OpenMeteo request
 openmeteo_variables = list(OPENMETEO_MAPPING.keys())
@@ -26,23 +26,20 @@ params = {
 # send API requests
 """due to a delay the past day cannot be requested through historical weather API, use the forecast API with the
 'past_days' parameter instead"""
-this_year_response = request_historical_data(client, params, this_year)
-last_year_response = request_historical_data(client, params, last_year)
-forecast_response = request_forecast_data(client, params | {'forecast_days': 16})
-past_day_response = request_forecast_data(client, params | {'past_days': 1})
+this_year_response = client.request_historical_data(params, this_year)
+last_year_response = client.request_historical_data(params, last_year)
+forecast_response = client.request_forecast_data(params | {'forecast_days': 16, 'past_days': 1})
+
+# print responses
+for _response in [this_year_response, last_year_response, forecast_response]:
+    client.print_response(_response)
+
 
 # convert response into dictionary
-this_year_dict = get_hourly_values(this_year_response, openmeteo_variables)
-last_year_dict = get_hourly_values(last_year_response, openmeteo_variables)
-forecast_dict = get_hourly_values(forecast_response, openmeteo_variables)
-past_day_dict = get_hourly_values(past_day_response, openmeteo_variables)
-
-# convert dictionary into pandas DataFrame
-this_year_df = pd.DataFrame(this_year_dict)
-last_year_df = pd.DataFrame(last_year_dict)
-forecast_df = pd.DataFrame(forecast_dict)
-past_day_df = pd.DataFrame(past_day_dict)
-past_day_df = past_day_df[0:24]  # take only the past day
+this_year_df = client.get_hourly_df(this_year_response, openmeteo_variables)
+last_year_df = client.get_hourly_df(last_year_response, openmeteo_variables)
+forecast_df = client.get_hourly_df(forecast_response, openmeteo_variables)
+past_day_df = forecast_df[0:24]  # take only the past day
 
 # remove leap day during leap years
 if is_leap_year(this_year):
