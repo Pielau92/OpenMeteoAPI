@@ -1,21 +1,21 @@
-# TMY2 format information issued from "The User's Manual for TMY2s" (https://www.nrel.gov/docs/legosti/old/7668.pdf)
-
-# region HEADER ELEMENTS
-# position of each element inside the header
-#   single value = single position
-#   tuple (e.g. (1, 2)) = position from...to (e.g. from 1 to 2 included))
-
 HEADER_ELEMENTS_POS = {
+    """Position of each element inside the header. Issued from "The User's Manual for TMY2s"
+     (https://www.nrel.gov/docs/legosti/old/7668.pdf). 
+       single value = single position
+       tuple = position from...to (example: (1, 2) = from position 1 to 2 included)
+    """
+
     'wban': {'value': (2, 6)},
     'city': {'value': (8, 29)},
     'state': {'value': (31, 32)},
     'timezone': {'value': (34, 36)},
 
-    'latitude': {'value': (38, 44),
-                 'north': 38,
-                 'degrees': (40, 41),
-                 'minutes': (43, 44),
-                 },
+    'latitude': {
+        'value': (38, 44),
+        'north': 38,
+        'degrees': (40, 41),
+        'minutes': (43, 44),
+    },
 
     'longitude': {
         'value': (46, 53),
@@ -28,14 +28,13 @@ HEADER_ELEMENTS_POS = {
     'elevation': {'value': (57, 59)}
 }
 
-# endregion
-
-# region DATA ELEMENTS
-# position of each element inside a record
-#   single value = single position
-#   tuple (e.g. (1, 2)) = position from...to (e.g. from 1 to 2 included))
-
 DATA_ELEMENTS_POS = {
+    """Position of each element inside a record. Issued from "The User's Manual for TMY2s"
+     (https://www.nrel.gov/docs/legosti/old/7668.pdf).
+       single value = single position
+       tuple = position from...to (example: (1, 2) = from position 1 to 2 included)
+    """
+
     # local standard time
     'year': {'value': (2, 3)},
     'month': {'value': (4, 5)},
@@ -209,4 +208,46 @@ DATA_ELEMENTS_POS = {
     }
 }
 
-# endregion
+# Mapping between tmy2/OpenMeteo variable names
+OPENMETEO_MAPPING = {
+    'temperature_2m': {
+        'tm2_varname': 'dry_bulb_temp',
+        'unit': '°C',
+    },
+    'relative_humidity_2m': {
+        'tm2_varname': 'rel_hum',
+        'unit': '%'
+    },
+    'dew_point_2m': {
+        'tm2_varname': 'dew_point_temp',
+        'unit': '°C'
+    },
+    'rain': {
+        'tm2_varname': 'precipitable_water',
+        'unit': 'mm'
+    },
+    'cloud_cover': {
+        'tm2_varname': 'total_sky_cover',
+        'unit': '%'
+    },
+    'surface_pressure': {
+        'tm2_varname': 'atmos_pressure',
+        'unit': 'hPa'
+    },
+    'wind_speed_10m': {
+        'tm2_varname': 'wind_speed',
+        'unit': 'km/h'
+    },
+    'wind_direction_10m': {
+        'tm2_varname': 'wind_dir',
+        'unit': '°'
+    },
+    'diffuse_radiation': {
+        'tm2_varname': 'diff_hor_rad',
+        'unit': 'W/m²'
+    },
+    'direct_radiation': {
+        'tm2_varname': 'dir_norm_rad',
+        'unit': 'W/m²'
+    }
+}
