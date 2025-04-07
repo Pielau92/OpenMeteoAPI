@@ -1,10 +1,10 @@
-HEADER_ELEMENTS_POS = {
-    """Position of each element inside the header. Issued from "The User's Manual for TMY2s"
-     (https://www.nrel.gov/docs/legosti/old/7668.pdf). 
-       single value = single position
-       tuple = position from...to (example: (1, 2) = from position 1 to 2 included)
-    """
+"""tmy2 format information issued from "The User's Manual for TMY2s"
+(https://www.nrel.gov/docs/legosti/old/7668.pdf)."""
 
+"""Position of each element inside the header.
+    single value = single position
+    tuple = position from...to (example: (1, 2) = from position 1 to 2 included)"""
+HEADER_ELEMENTS_POS = {
     'wban': {'value': (2, 6)},
     'city': {'value': (8, 29)},
     'state': {'value': (31, 32)},
@@ -28,13 +28,10 @@ HEADER_ELEMENTS_POS = {
     'elevation': {'value': (57, 59)}
 }
 
+"""Position of each element inside a record.
+    single value = single position
+    tuple = position from...to (example: (1, 2) = from position 1 to 2 included)"""
 DATA_ELEMENTS_POS = {
-    """Position of each element inside a record. Issued from "The User's Manual for TMY2s"
-     (https://www.nrel.gov/docs/legosti/old/7668.pdf).
-       single value = single position
-       tuple = position from...to (example: (1, 2) = from position 1 to 2 included)
-    """
-
     # local standard time
     'year': {'value': (2, 3)},
     'month': {'value': (4, 5)},
