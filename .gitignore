@@ -17,3 +17,8 @@ dist/
 *.log
 .idea/misc.xml
 OpenMeteoAPI/.cache.sqlite
+
+*.tm2
+*.xlsx
+data/
+*.csv
