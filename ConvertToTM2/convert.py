@@ -1,12 +1,13 @@
-from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS
+from ConvertToTM2.tmy2format import HEADER_ELEMENTS_POS, DATA_ELEMENTS_POS, OPENMETEO_MAPPING
 from OpenMeteoAPI.utils import *
 
 import datetime
 from math import isnan
+from pandas import DataFrame
 
 
 class TMY2:
-    def __init__(self, lat: float, long: float, time_zone: int, elevation: int, length: int = 8760) -> None:
+    def __init__(self, length: int = 8760) -> None:
         """Initialize tmy2 conversion.
 
         For more information about the tmy2 format, see "The User's Manual for TMY2s" under
@@ -15,9 +16,20 @@ class TMY2:
         :param int length: length of tm2 file (number of records, typically 1 record per hour for a year, so 8760)
         """
         self.length = length
+        self.records = [DataRecord() for _ in range(self.length)]
+        self.header = None
+
+    def set_header(self, lat: float, long: float, time_zone: int, elevation: int) -> None:
+        """Set tmy2 file header.
+
+        :param float lat: latitude in degrees
+        :param float long: longitude in degrees
+        :param int time_zone: time zone (UTC = 0, UTC+1 = 1, UTC-1 = -1 etc.)
+        :param int elevation: elevation in meters
+        """
+
         self.header = HeaderRecord(lat=lat, long=long, time_zone=time_zone, elevation=elevation)
         self.header.update()
-        self.records = [DataRecord() for _ in range(self.length)]
 
     def write(self, data: dict, start: int = 0) -> None:
         """Write weather dataset into records.
@@ -75,6 +87,45 @@ class TMY2:
                 'hour': date.hour,
             })
             date += dt
+
+    def export_from_openmeteo_df(
+            self, data: DataFrame, lat: float, long: float, time_zone: int, elevation: int, path: str) -> None:
+        """Export tm2 file from pandas DataFrame with OpenMeteo data.
+
+        :param DataFrame data: weather data
+        :param float lat: latitude in degrees
+        :param float long: longitude in degrees
+        :param int time_zone: time zone (UTC = 0, UTC+1 = 1, UTC-1 = -1 etc.)
+        :param int elevation: elevation in meters
+        :param str path: export path
+        """
+
+        self.set_header(lat=lat, long=long, time_zone=time_zone, elevation=elevation)
+
+        # fill datetime column
+        self.fill_datetime_column(year=int(data.iloc[0].date.year))
+
+        # collect tmy2 data
+        tmy2_data = {
+            'year': data.date.dt.year.astype(str).str[-2:].astype(int).to_list(),  # list of years, format YY
+            'month': data.date.dt.month.astype(str).str.zfill(2).astype(int).to_list(),  # list of months, format MM
+            'day': data.date.dt.day.astype(str).str.zfill(2).astype(int).to_list(),  # list of days, format DD
+            'hour': data.date.dt.hour.astype(str).str.zfill(2).astype(int).to_list(),  # list of hours, format hh
+        }
+        for _key in OPENMETEO_MAPPING.keys():
+            tmy2_data[OPENMETEO_MAPPING[_key]['tm2_varname']] = data[_key].to_list()
+
+        # determine at which hour of the year the data begins
+        first_hour = hour_of_year(
+            year=int(tmy2_data['year'][0]),
+            month=int(tmy2_data['month'][0]),
+            day=int(tmy2_data['day'][0]),
+            hour=int(tmy2_data['hour'][0]))
+
+        # write tmy2 data into tmy2 records
+        self.write(tmy2_data, start=first_hour)
+
+        self.export(path)
 
 
 class Record:
