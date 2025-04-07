@@ -14,7 +14,6 @@ params = {
     "longitude": 16.3721,
     "hourly": openmeteo_variables,
     "timezone": "auto",
-    "models": ["icon_global", "icon_eu"],
 }
 
 this_year: int = datetime.date.today().year
@@ -27,9 +26,9 @@ years = list(range(from_year, this_year + 1))
 
 historical_responses = dict()
 for _year in years:
-    historical_responses[str(_year)] = client.request_historical_data(params, _year)
+    historical_responses[str(_year)] = client.request_historical_data(params | {'models': 'ecmwf_ifs'}, _year)
 
-forecast_response = client.request_forecast_data(params | {'forecast_days': 16, 'past_days': 1})
+forecast_response = client.request_forecast_data(params | {'models': 'icon_eu', 'forecast_days': 16, 'past_days': 1})
 
 # convert responses into DataFrames
 historical_dfs = dict()
