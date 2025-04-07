@@ -10,44 +10,41 @@ client = OpenMeteoClient()
 # list of variables packed in OpenMeteo request
 openmeteo_variables = list(OPENMETEO_MAPPING.keys())
 
-latitude = 48.2085
-longitude = 16.3721
-this_year = datetime.date.today().year  # year of historical dataset
-last_year = datetime.date.today().year - 1  # year of historical dataset
-
+# request parameters
 params = {
-    "latitude": latitude,
-    "longitude": longitude,
+    "latitude": 48.2085,
+    "longitude": 16.3721,
     "hourly": openmeteo_variables,
     "timezone": "auto",
     "models": ["icon_global", "icon_eu"],
 }
 
-# send API requests
+this_year: int = datetime.date.today().year
+from_year: int = 2022
+years = list(range(from_year, this_year + 1))
+
+# get responses from API requests
 """due to a delay the past day cannot be requested through historical weather API, use the forecast API with the
 'past_days' parameter instead"""
-this_year_response = client.request_historical_data(params, this_year)
-last_year_response = client.request_historical_data(params, last_year)
+
+historical_responses = dict()
+for _year in years:
+    historical_responses[str(_year)] = client.request_historical_data(params, _year)
+
 forecast_response = client.request_forecast_data(params | {'forecast_days': 16, 'past_days': 1})
 
-# print responses
-for _response in [this_year_response, last_year_response, forecast_response]:
-    client.print_response(_response)
+# convert responses into DataFrames
+historical_dfs = dict()
+for key in historical_responses:
+    _df = client.get_hourly_df(historical_responses[key], openmeteo_variables)
 
+    # remove leap day during leap years
+    if is_leap_year(int(key)):
+        _df = _df[~((_df.date.dt.month == 2) & (_df.date.dt.day == 29))]
 
-# convert response into dictionary
-this_year_df = client.get_hourly_df(this_year_response, openmeteo_variables)
-last_year_df = client.get_hourly_df(last_year_response, openmeteo_variables)
+    historical_dfs[key] = _df
+
 forecast_df = client.get_hourly_df(forecast_response, openmeteo_variables)
-past_day_df = forecast_df[0:24]  # take only the past day
-
-# remove leap day during leap years
-if is_leap_year(this_year):
-    this_year_df = this_year_df[~((this_year_df.date.dt.month == 2) & (this_year_df.date.dt.day == 29))]
-if is_leap_year(last_year):
-    last_year_df = last_year_df[~((last_year_df.date.dt.month == 2) & (last_year_df.date.dt.day == 29))]
-if is_leap_year(forecast_df.date.dt.year[0]):
-    forecast_df = forecast_df[~((forecast_df.date.dt.month == 2) & (forecast_df.date.dt.day == 29))]
 
 # region FORECAST
 
