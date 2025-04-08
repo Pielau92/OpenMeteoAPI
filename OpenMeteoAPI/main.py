@@ -51,24 +51,22 @@ export = lambda df, response, path: TMY2().export_from_openmeteo_df(data=df,
                                                                     time_zone=int(response.UtcOffsetSeconds() / 3600),
                                                                     elevation=int(response.Elevation()), path=path)
 
-# export historical data
+# tm2 export historical data
 for key in historical_responses:
     export(historical_dfs[key], historical_responses[key], f'../data/historical{str(key)}.tm2')
 
-# export forecast data
+# tm2 export forecast data
 export(forecast_df, forecast_response, '../data/forecast.tm2')
 
-# export forecast data of the past day
+# tm2 export forecast data of the past day
 export(past_day_df, forecast_response, '../data/forecast_past_day.tm2')
 
 # add units to headers
 headers = ['date'] + [_varname + '_' + OPENMETEO_MAPPING[_varname]['unit'] for _varname in openmeteo_variables]
-
-for key in historical_dfs:
-    historical_dfs[key].columns = headers
-
 forecast_df.columns = headers
 past_day_df.columns = headers
+for key in historical_dfs:
+    historical_dfs[key].columns = headers
 
 # csv exports
 for key in historical_dfs:
