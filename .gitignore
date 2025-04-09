@@ -22,3 +22,4 @@ OpenMeteoAPI/.cache.sqlite
 *.xlsx
 data/
 *.csv
+*.spec

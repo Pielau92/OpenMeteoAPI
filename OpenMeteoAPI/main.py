@@ -1,6 +1,6 @@
 from ConvertToTM2.convert import TMY2
 from ConvertToTM2.tmy2format import OPENMETEO_MAPPING
-from openmeteo_api import OpenMeteoClient
+from OpenMeteoAPI.openmeteo_api import OpenMeteoClient
 from OpenMeteoAPI.utils import *
 
 client = OpenMeteoClient()
